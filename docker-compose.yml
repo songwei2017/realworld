@@ -1,0 +1,24 @@
+version: "3"
+services:
+  golang:
+    image: 'golang:1.20.7'
+    ports:  
+    - "8180:8080"
+    tty: true
+    volumes:
+    - ./:/api/:rw
+    networks:
+    - my-services 
+
+
+# mongodb volume
+volumes:
+  mongodata:
+
+networks:
+  my-services:
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.22.0.0/24"
+          gateway: 172.22.0.1

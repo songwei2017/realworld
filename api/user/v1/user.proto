@@ -1,0 +1,123 @@
+syntax = "proto3";
+
+package user.v1;
+
+import "google/api/annotations.proto";
+option go_package = "realworld/api/user/v1;v1";
+
+
+service User {
+  rpc Authentication(AuthenticationRequest) returns(AuthenticationReply){
+    option (google.api.http) = {
+      post: "/api/users/login"
+      body:"*"
+    };
+  }
+
+  rpc Registration(RegistrationRequest)returns(RegistrationReply){
+    option (google.api.http) = {
+      post: "/api/users"
+      body:"*"
+    };
+  }
+  rpc GetCurrentUser(GetCurrentUserRequest)returns(GetCurrentUserReply){
+    option (google.api.http) = {
+      get: "/api/user"
+    };
+  }
+
+  rpc UpdateUser(UpdateUserRequest)returns(UpdateUserReply){
+    option (google.api.http) = {
+      put: "/api/user"
+      body:"*"
+    };
+  }
+}
+
+
+message AuthenticationRequest {
+  message User {
+    string username = 1;
+    string email = 2;
+    string password = 3;
+  }
+  User user = 1;
+}
+
+message AuthenticationReply {
+
+  message User {
+    string email = 1;
+    string token = 2;
+    string username = 3;
+    string bio = 4;
+    string image = 5;
+  }
+
+  User user = 1;
+}
+
+
+message RegistrationRequest {
+
+  message User {
+    string username = 1;
+    string email = 2;
+    string password = 3;
+  }
+
+  User user = 1;
+}
+
+message RegistrationReply {
+
+  message User {
+    string email = 1;
+    string token = 2;
+    string username = 3;
+    string bio = 4;
+    string image = 5;
+  }
+
+  User user = 1;
+}
+
+message GetCurrentUserRequest {}
+
+message GetCurrentUserReply {
+
+  message User {
+    string email = 1;
+    string token = 2;
+    string username = 3;
+    string bio = 4;
+    string image = 5;
+  }
+
+  User user = 1;
+}
+
+message UpdateUserRequest {
+
+  message User {
+    string email = 1;
+    string bio = 2;
+    string image = 3;
+    string username = 4;
+    string password = 5;
+  }
+
+  User user = 1;
+}
+message UpdateUserReply {
+
+  message User {
+    string email = 1;
+    string token = 2;
+    string username = 3;
+    string bio = 4;
+    string image = 5;
+  }
+
+  User user = 1;
+}
