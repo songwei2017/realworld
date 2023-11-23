@@ -1,0 +1,117 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{JOB_NAME}}
+  namespace: default
+  labels:
+    app: {{JOB_NAME}}
+spec:
+  replicas: 2
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app: {{JOB_NAME}}
+  template:
+    metadata:
+      labels:
+        app: {{JOB_NAME}}
+    spec:
+      containers:
+        - name: {{JOB_NAME}}
+          image: {{image}}
+          ports:
+            - containerPort: 8000
+          readinessProbe:
+            tcpSocket:
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 200m
+              memory: 50Mi
+            limits:
+              cpu: 300m
+              memory: 100Mi
+          volumeMounts:
+            - name: timezone
+              mountPath: /etc/localtime
+            - name: conf
+              mountPath: /conf
+      volumes:
+        - name: timezone
+          hostPath:
+            path: /usr/share/zoneinfo/Asia/Shanghai
+        - name: conf
+          configMap:
+            name: realworld
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{JOB_NAME}}-svc
+  namespace: default
+spec:
+  ports:
+    - nodePort: {{NODE_PORT}}
+      port: 8000
+      protocol: TCP
+      targetPort: 8000
+  type: NodePort
+  selector:
+    app: {{JOB_NAME}}
+
+---
+
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{JOB_NAME}}-hpa-c
+  namespace: default
+  labels:
+    app: {{JOB_NAME}}-hpa-c
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{JOB_NAME}}
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 80
+
+---
+
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{JOB_NAME}}-hpa-m
+  namespace: default
+  labels:
+    app: {{JOB_NAME}}-hpa-m
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{JOB_NAME}}
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
