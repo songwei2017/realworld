@@ -1,24 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{JOB_NAME}}
+  name: [[JOB_NAME]]
   namespace: default
   labels:
-    app: {{JOB_NAME}}
+    app: [[JOB_NAME]]
 spec:
   replicas: 2
   revisionHistoryLimit: 5
   selector:
     matchLabels:
-      app: {{JOB_NAME}}
+      app: [[JOB_NAME]]
   template:
     metadata:
       labels:
-        app: {{JOB_NAME}}
+        app: [[JOB_NAME]]
     spec:
       containers:
-        - name: {{JOB_NAME}}
-          image: {{image}}
+        - name: [[JOB_NAME]]
+          image: [[image]]
           ports:
             - containerPort: 8000
           readinessProbe:
@@ -56,32 +56,32 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{JOB_NAME}}-svc
+  name: [[JOB_NAME]]-svc
   namespace: default
 spec:
   ports:
-    - nodePort: {{NODE_PORT}}
+    - nodePort: [[NODE_PORT]]
       port: 8000
       protocol: TCP
       targetPort: 8000
   type: NodePort
   selector:
-    app: {{JOB_NAME}}
+    app: [[JOB_NAME]]
 
 ---
 
 apiVersion: autoscaling/v2beta2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{JOB_NAME}}-hpa-c
+  name: [[JOB_NAME]]-hpa-c
   namespace: default
   labels:
-    app: {{JOB_NAME}}-hpa-c
+    app: [[JOB_NAME]]-hpa-c
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{JOB_NAME}}
+    name: [[JOB_NAME]]
   minReplicas: 3
   maxReplicas: 10
   metrics:
@@ -97,15 +97,15 @@ spec:
 apiVersion: autoscaling/v2beta2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{JOB_NAME}}-hpa-m
+  name: [[JOB_NAME]]-hpa-m
   namespace: default
   labels:
-    app: {{JOB_NAME}}-hpa-m
+    app: [[JOB_NAME]]-hpa-m
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{JOB_NAME}}
+    name: [[JOB_NAME]]
   minReplicas: 3
   maxReplicas: 10
   metrics:
